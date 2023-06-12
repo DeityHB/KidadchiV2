@@ -1,5 +1,3 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/DeityHB/KidadchiV2/main/UI"))()
-
 local Window = library:AddWindow("Preview", {
     main_color = Color3.fromRGB(41, 74, 122),
     min_size = Vector2.new(500, 600),
