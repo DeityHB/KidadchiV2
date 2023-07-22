@@ -1,0 +1,1076 @@
+game:GetService("Players").LocalPlayer.Idled:connect(function()
+    game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    wait(1)
+
+    game:GetService("VirtualUser"):Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+end)
+
+getgenv().rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+    if child.Name == 'ErrorPrompt' and child:FindFirstChild('MessageArea') and child.MessageArea:FindFirstChild("ErrorFrame") then
+        game:GetService("TeleportService"):Teleport(game.PlaceId)
+    end
+end)
+
+repeat task.wait() until game:IsLoaded()
+
+local Settings = {
+    KillAura = false,
+    CheesedLevels = false,
+    SelectedEgg = false,
+    AutoHatch = false,
+    CommonAutoDelete = false,
+    RareAutoDelete = false,
+    EpicAutoDelete = false,
+    LegendAutoDelete = false,
+    MysteriousAutoDelete = false,
+    AutoRebirth = false,
+    StatAmount = 1,
+    HealthStat = false,
+    SpeedStat = false,
+    DamageStat = false,
+    CritStat = false,
+    SelectedCode = "",
+    Quest = false,
+    Craft = false,
+    DrillRaidKillAura = false,
+    EventTPToMob = false,
+    WalkSpeed = false,
+    KillAuraEndless = false,
+}
+
+function TweenStuff(targetCFrame, speed)
+    speed = speed or 25  
+    local duration = (targetCFrame.p - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude / speed
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear)
+    local tween = game:GetService("TweenService"):Create(game.Players.LocalPlayer.Character.HumanoidRootPart, tweenInfo, {CFrame = targetCFrame})
+    tween:Play()
+end
+
+local XP = false
+local XP1 = false
+local player = game.Players.LocalPlayer
+
+
+local Library = loadstring(game:HttpGet('https://raw.githubusercontent.com/DeityHB/Stuff/main/UI.2'))()
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
+
+local Box = Library.Render({
+    Title = 'Kidachi';
+    SavePosition = true;
+})
+
+local AttackBased = Box:Tab({
+    Title = 'Farming Based'
+})
+
+local UpgradeBased = Box:Tab({
+    Title = 'Upgrade Based'
+})
+
+local MiscBased = Box:Tab({
+    Title = 'Misc Based'
+})
+
+local Farming = AttackBased:Section({
+    Title = "Farming";
+})
+
+local Endless = AttackBased:Section({
+    Title = "Endless Farming";
+})
+
+Farming:Toggle({
+    Title = 'Free Levels',
+    Default = false,
+    Callback = function(value)
+        Settings.CheesedLevels = value
+    end
+})
+
+
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.CheesedLevels then
+                player.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").ForScript["Monster_"].M0.HumanoidRootPart.CFrame
+                game:GetService("Players").DeityAccountAlt.SlashSpeed.Value = 100
+                local args = {
+                    [1] = "DamToMonster",
+                    [2] = workspace.ForScript.Monster_.M0,
+                    [3] = {
+                        ["damtype"] = "normal"
+                    }
+                }
+                
+                game:GetService("ReplicatedStorage").CurRemotes.MonsterEvent:FireServer(unpack(args))
+                game:GetService("Players").DeityAccountAlt.SlashSpeed.Value = 0
+            end
+        end)
+    end
+end)
+
+Farming:Toggle({
+    Title = 'Kill Aura',
+    Default = false,
+    Callback = function(value)
+        Settings.KillAura = value
+    end
+})
+
+local playerName = game.Players.LocalPlayer.Name
+
+local function GetPlayerMap(playerName)
+    local monsterFolder = game.workspace.ForScript.Monster
+    local mapFolders = monsterFolder:GetDescendants()
+    for _, mapFolder in ipairs(mapFolders) do
+        local playerMapFolder = mapFolder:FindFirstChild("Player")
+        if playerMapFolder and playerMapFolder:FindFirstChild(playerName) then
+            return mapFolder
+        end
+    end
+    return nil
+end
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.KillAura then
+                if player.Character and player.Character.Humanoid and player.Character.Humanoid.Health > 0 then
+                    local playerMap = GetPlayerMap(playerName)
+                    if playerMap then
+                        local monsterFolder = playerMap:FindFirstChild("Monster_")
+                        if monsterFolder then
+                            for i, v in ipairs(monsterFolder:GetChildren()) do
+                                if v and v:FindFirstChild("HumanoidRootPart") then
+                                    local args = {
+                                        [1] = "DamToMonster",
+                                        [2] = v,
+                                        [3] = {
+                                            ["damtype"] = "normal"
+                                        }
+                                    }
+                                    game:GetService("ReplicatedStorage").CurRemotes.MonsterEvent:FireServer(unpack(args))
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+local function AXP()
+    _G.Toggled = true
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local playerID = player.UserId
+
+    local function GetPlayerPetFolder()
+        local playerPetFolder = workspace.ForScript.player[tostring(playerID)].petFol
+        if playerPetFolder then
+            return playerPetFolder
+        else
+            return nil
+        end
+    end
+
+    local Pet = game:GetService("ReplicatedStorage").CurRemotes.DataChange_Pet
+
+    local function EquipA10()
+        Pet:FireServer("equip", "A10")
+    end
+
+    local function UnequipA3()
+        Pet:FireServer("unequip", "A3")
+    end
+
+    if not XP then
+        return -- Exit the function if XP is false
+    end
+
+    while true do
+        if not XP then
+            return -- Exit the loop if XP is false
+        end
+
+        local playerPetFolder = GetPlayerPetFolder()
+
+        -- Check if playerID is a valid number
+        if type(playerID) == "number" then
+            if playerPetFolder then
+                print("Contents of player's pet folder:")
+                for _, child in ipairs(playerPetFolder:GetChildren()) do
+                    print(child.Name)
+                end
+            else
+                print("Player's pet folder not found.")
+            end
+        else
+            print("Invalid player ID.")
+        end
+
+        local playerMap = nil
+        for _, mapFolder in ipairs(workspace.ForScript.Monster:GetDescendants()) do
+            local playerMapFolder = mapFolder:FindFirstChild("Player")
+            if playerMapFolder and playerMapFolder:FindFirstChild(playerName) then
+                playerMap = mapFolder
+                break
+            end
+        end
+
+        if playerMap then
+            print("Player is in a map.")
+
+            -- Check if A3 is equipped
+            if playerPetFolder and playerPetFolder:FindFirstChild("A3") then
+                -- Wait for 5 seconds with A3 equipped
+                wait(5)
+
+                -- Check if A3 is still equipped after 5 seconds
+                if playerPetFolder:FindFirstChild("A3") then
+                    UnequipA3()
+                    EquipA10()
+                end
+            end
+        else
+            print("Player is not in a map.")
+
+            -- Unequip A10 if equipped
+            if playerPetFolder and playerPetFolder:FindFirstChild("A10") then
+                Pet:FireServer("unequip", "A10")
+            end
+
+            -- Check if any pet is equipped
+            local isAnyPetEquipped = false
+            if playerPetFolder and #playerPetFolder:GetChildren() > 0 then
+                isAnyPetEquipped = true
+            end
+
+            -- Equip A3 if no pet is equipped
+            if not isAnyPetEquipped then
+                Pet:FireServer("equip", "A3")
+            end
+        end
+
+        wait(1)
+    end
+end
+
+
+Farming:Toggle({
+    Title = 'Prophet + Arch Mage Use',
+    Default = false,
+    Callback = function(boolean)
+        XP = boolean
+    end
+})
+_G.Toggled = false
+
+task.spawn(function()
+    while task.wait() do
+        if XP and _G.Toggled ~= true then
+            AXP()
+        end 
+    end 
+end)
+
+
+
+
+
+
+local function AMR()
+    _G.Toggled1 = true
+    local player = game.Players.LocalPlayer
+    local playerName = player.Name
+    local playerID = player.UserId
+
+    local function GetPlayerPetFolder()
+        local playerPetFolder = workspace.ForScript.player[tostring(playerID)].petFol
+        if playerPetFolder then
+            return playerPetFolder
+        else
+            return nil
+        end
+    end
+
+    local Pet = game:GetService("ReplicatedStorage").CurRemotes.DataChange_Pet
+
+    local function EquipA4()
+        Pet:FireServer("equip", "A4")
+    end
+
+    local function UnequipA3()
+        Pet:FireServer("unequip", "A3")
+    end
+
+    if not XP1 then
+        return -- Exit the function if XP is false
+    end
+
+    while true do
+        if not XP1 then
+            return -- Exit the loop if XP is false
+        end
+
+        local playerPetFolder = GetPlayerPetFolder()
+
+        -- Check if playerID is a valid number
+        if type(playerID) == "number" then
+            if playerPetFolder then
+                print("Contents of player's pet folder:")
+                for _, child in ipairs(playerPetFolder:GetChildren()) do
+                    print(child.Name)
+                end
+            else
+                print("Player's pet folder not found.")
+            end
+        else
+            print("Invalid player ID.")
+        end
+
+        local playerMap = nil
+        for _, mapFolder in ipairs(workspace.ForScript.Monster:GetDescendants()) do
+            local playerMapFolder = mapFolder:FindFirstChild("Player")
+            if playerMapFolder and playerMapFolder:FindFirstChild(playerName) then
+                playerMap = mapFolder
+                break
+            end
+        end
+
+        if playerMap then
+            print("Player is in a map.")
+
+            -- Check if A3 is equipped
+            if playerPetFolder and playerPetFolder:FindFirstChild("A3") then
+                -- Wait for 5 seconds with A3 equipped
+                wait(5)
+
+                -- Check if A3 is still equipped after 5 seconds
+                if playerPetFolder:FindFirstChild("A3") then
+                    UnequipA3()
+                    EquipA4()
+                end
+            end
+        else
+            print("Player is not in a map.")
+
+            -- Unequip A4 if equipped
+            if playerPetFolder and playerPetFolder:FindFirstChild("A4") then
+                Pet:FireServer("unequip", "A4")
+            end
+
+            -- Check if any pet is equipped
+            local isAnyPetEquipped = false
+            if playerPetFolder and #playerPetFolder:GetChildren() > 0 then
+                isAnyPetEquipped = true
+            end
+
+            -- Equip A3 if no pet is equipped
+            if not isAnyPetEquipped then
+                Pet:FireServer("equip", "A3")
+            end
+        end
+
+        wait(1)
+    end
+end
+
+
+
+Farming:Toggle({
+    Title = 'Rogue + Arch Mage Use',
+    Default = false,
+    Callback = function(boolean)
+        XP1 = boolean
+    end
+})
+_G.Toggled1 = false
+
+task.spawn(function()
+    while task.wait() do
+        if XP1 and _G.Toggled1 ~= true then
+            AMR()
+        end 
+    end 
+end)
+
+Farming:Toggle({
+    Title = 'Drill Raid Kill Aura',
+    Default = false,
+    Callback = function(value)
+        Settings.DrillRaidKillAura = value
+    end
+})
+
+
+
+
+local playerName1 = game.Players.LocalPlayer.Name
+
+local function GetPlayerMap1(playerName1)
+    local monsterFolder = game.workspace.ForScript.DrilRaid
+    local mapFolders = monsterFolder:GetDescendants()
+    for _, mapFolder in ipairs(mapFolders) do
+        local playerMapFolder = mapFolder:FindFirstChild("Player")
+        if playerMapFolder and playerMapFolder:FindFirstChild(playerName1) then
+            return mapFolder
+        end
+    end
+    return nil
+end
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.DrillRaidKillAura then
+                if player.Character and player.Character.Humanoid and player.Character.Humanoid.Health > 0 then
+                    local playerMap = GetPlayerMap1(playerName1)
+                    if playerMap then
+                        local monsterFolder = playerMap:FindFirstChild("Monster_")
+                        if monsterFolder then
+                            for i, v in ipairs(monsterFolder:GetChildren()) do
+                                if v and v:FindFirstChild("HumanoidRootPart") then
+                                    local args = {
+                                        [1] = "DamToMonster",
+                                        [2] = v,
+                                        [3] = {
+                                            ["damtype"] = "normal"
+                                        }
+                                    }
+                                    game:GetService("ReplicatedStorage").CurRemotes.MonsterEvent:FireServer(unpack(args))
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+
+
+Farming:Toggle({
+    Title = 'God Mode',
+    Default = false,
+    Callback = function(value)
+        Settings.GodMode = value
+    end
+})
+
+--
+
+local player = game.Players.LocalPlayer
+
+local namecall; namecall = hookmetamethod(game, '__namecall', function(object, ...)
+
+    local args = {...}
+
+    if getnamecallmethod() == "FireServer" then
+        if Settings.GodMode or Settings.EndlessGodMode then
+            if object.Name == 'MonsterEvent' and args[1] == "PlayServerAni" then
+                args[3] = math.random(1,200);
+            end;
+        end;
+    end;
+return namecall(object, unpack(args));
+end);
+
+Farming:Toggle({
+    Title = 'Auto Quest',
+    Default = false,
+    Callback = function(value)
+        Settings.Quest = value
+    end
+})
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.Quest then
+                local args = {
+                    [1] = "Accept"
+                }
+                
+                game:GetService("ReplicatedStorage").CurRemotes.DataChange_Mission:FireServer(unpack(args))
+                
+                local args = {
+                    [1] = "Completed"
+                }
+                
+                game:GetService("ReplicatedStorage").CurRemotes.DataChange_Mission:FireServer(unpack(args))
+            end
+        end)
+    end
+end)
+
+
+Endless:Toggle({
+    Title = 'Endless Farm (TURN AUTO ON)',
+    Default = false,
+    Callback = function(value)
+        Settings.KillAuraEndless = value
+    end
+})
+
+local playerName2 = game.Players.LocalPlayer.Name
+
+local function GetPlayerMap2(playerName2)
+    local monsterFolder = game.workspace.ForScript.InfiniteMap
+    local mapFolders = monsterFolder:GetDescendants()
+    for _, mapFolder in ipairs(mapFolders) do
+        local playerMapFolder = mapFolder:FindFirstChild("Player")
+        if playerMapFolder and playerMapFolder:FindFirstChild(playerName1) then
+            return mapFolder
+        end
+    end
+    return nil
+end
+
+local playerPosition = player.Character.HumanoidRootPart.Position
+
+task.spawn(function()
+    while task.wait() do
+        if Settings.KillAuraEndless then
+            pcall(function()
+                if player.Character and player.Character.Humanoid and player.Character.Humanoid.Health > 0 then
+                    local playerMap = GetPlayerMap2(playerName2)
+                    if playerMap then
+                        local monsterFolder = playerMap:FindFirstChild("Monster_")
+                        if monsterFolder then
+                            for i, v in ipairs(monsterFolder:GetChildren()) do
+                                if v and v:FindFirstChild("HumanoidRootPart") then
+                                    local args = {
+                                        [1] = "DamToMonster",
+                                        [2] = v,
+                                        [3] = {
+                                            ["damtype"] = "normal"
+                                        }
+                                    }
+                                    game:GetService("ReplicatedStorage").CurRemotes.MonsterEvent:FireServer(unpack(args))
+                                end
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+
+
+Endless:Toggle({
+    Title = 'GodMode',
+    Default = false,
+    Callback = function(value)
+        Settings.EndlessGodMode = value
+    end
+})
+
+local player = game.Players.LocalPlayer
+
+local namecall; namecall = hookmetamethod(game, '__namecall', function(object, ...)
+
+    local args = {...}
+
+    if getnamecallmethod() == "FireServer" then
+        if Settings.EndlessGodMode then
+            if object.Name == 'MonsterEvent' and args[1] == "DamToPlayer_Num" then
+                args[2] = 0
+            end;
+        end
+    end;
+return namecall(object, unpack(args));
+end);
+
+local EggSection = UpgradeBased:Section({
+    Title = "Eggs";
+})
+
+local Eggs = {
+    "Green - 50",
+    "Blue - 1K",
+    "Purple - 15K",
+    "Yellow - 50K",
+    "Red with Yellow Spots - 500K",
+    "Rainbow - 1M",
+    "Obsidian with Stars - 12M",
+    "Ice with Lines - 21.6M",
+    "Ice with Stars - 324M",
+}
+
+local EggSelectDropdown = EggSection:Dropdown({
+    Title = "Select Egg",
+    List = Eggs,
+    Callback = function(v)
+        Settings.SelectedEgg = v
+        local selectedPosition = nil
+        for i, egg in ipairs(Eggs) do
+            if egg == v then
+                selectedPosition = i
+                break
+            end
+        end
+        if selectedPosition then
+            Settings.SelectedPosition = selectedPosition
+        end
+    end
+})
+
+EggSection:Toggle({
+    Title = 'Auto Hatch',
+    Default = false,
+    Callback = function(value)
+        Settings.AutoHatch = value
+    end
+})
+
+EggSection:Toggle({
+    Title = 'Common Auto Delete',
+    Default = false,
+    Callback = function(value)
+        Settings.CommonAutoDelete = value
+    end
+})
+
+EggSection:Toggle({
+    Title = 'Rare Auto Delete',
+    Default = false,
+    Callback = function(value)
+        Settings.RareAutoDelete = value
+    end
+})
+
+
+EggSection:Toggle({
+    Title = 'Epic Auto Delete',
+    Default = false,
+    Callback = function(value)
+        Settings.EpicAutoDelete = value
+    end
+})
+
+EggSection:Toggle({
+    Title = 'Legend Auto Delete',
+    Default = false,
+    Callback = function(value)
+        Settings.LegendAutoDelete = value
+    end
+})
+
+
+EggSection:Toggle({
+    Title = 'Mysterious Auto Delete',
+    Default = false,
+    Callback = function(value)
+        Settings.MysteriousAutoDelete = value
+    end
+})
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.AutoHatch then
+                local args = {
+                    [1] = "Egg",
+                    [2] = Settings.SelectedPosition,
+                    [3] = false,
+                    [4] = {
+                        ["Common"] = Settings.CommonAutoDelete,
+                        ["Legend"] = Settings.LegendAutoDelete,
+                        ["Mysterious"] = Settings.MysteriousAutoDelete,
+                        ["Epic"] = Settings.EpicAutoDelete,
+                        ["Rare"] = Settings.RareAutoDelete
+                    }
+                }
+
+                game:GetService("ReplicatedStorage").CurrentModule.RangeCheck.RangeEvent:FireServer(unpack(args))
+            end
+        end)
+    end
+end)
+
+EggSection:Toggle({
+    Title = 'Auto Craft',
+    Default = false,
+    Callback = function(value)
+        Settings.Craft = value
+    end
+})
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.Craft then
+                local args = {
+                    [1] = "craftAll"
+                }
+                
+                game:GetService("ReplicatedStorage").CurRemotes.DataChange_Item:FireServer(unpack(args))
+            end
+        end)
+    end
+end)
+
+local StatSection = UpgradeBased:Section({
+    Title = "Stats";
+})
+
+StatSection:Toggle({
+    Title = 'Auto Rebirth',
+    Default = false,
+    Callback = function(value)
+        Settings.AutoRebirth = value
+    end
+})
+
+
+task.spawn(function()
+    while task.wait(3) do
+        pcall(function()
+            if Settings.AutoRebirth then
+                local args = {
+                    [1] = "rebirth"
+                }
+                
+                game:GetService("ReplicatedStorage").CurRemotes.DataChange_Rebirth:FireServer(unpack(args))
+            end
+        end)
+    end
+end)
+
+Settings.StatAmount = 1
+
+StatSection:Slider({
+    Title = "Stat Amount",
+    Min = 1,
+    Max = 100,
+    Default = 1,
+    Callback = function(v)
+        Settings.StatAmount = v
+    end
+})
+
+local currentStatPoint = 0
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            local statPointText = game:GetService("Players").LocalPlayer.PlayerGui.MainGui.UpgradeFrame.Points.Text
+            currentStatPoint = tonumber(statPointText:match("(%d+)")) 
+        end)
+    end
+end)
+
+StatSection:Toggle({
+    Title = 'Auto Health Stat',
+    Default = false,
+    Callback = function(value)
+        Settings.HealthStat = value
+    end
+})
+
+task.spawn(function()
+    while task.wait() do
+        if Settings.HealthStat then
+            if currentStatPoint and tonumber(Settings.StatAmount) and currentStatPoint >= tonumber(Settings.StatAmount) then
+                local args = {
+                    [1] = "ClickPoints",
+                    [2] = {
+                        ["Points"] = tonumber(Settings.StatAmount),
+                        ["Obj"] = "GHealth"
+                    }
+                }
+
+                game:GetService("ReplicatedStorage").CurRemotes.DataChange_Points:FireServer(unpack(args))
+            end
+        end
+    end
+end)
+
+
+StatSection:Toggle({
+    Title = 'Auto Damage Stat',
+    Default = false,
+    Callback = function(value)
+        Settings.DamageStat = value
+    end
+})
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.DamageStat then
+                if currentStatPoint and tonumber(Settings.StatAmount) and currentStatPoint >= tonumber(Settings.StatAmount) then
+                    local args = {
+                        [1] = "ClickPoints",
+                        [2] = {
+                            ["Points"] = tonumber(Settings.StatAmount),
+                            ["Obj"] = "GDamage"
+                        }
+                    }
+                    
+                    game:GetService("ReplicatedStorage").CurRemotes.DataChange_Points:FireServer(unpack(args))
+                end
+            end
+        end)
+    end
+end)
+
+
+StatSection:Toggle({
+    Title = 'Auto Speed Stat',
+    Default = false,
+    Callback = function(value)
+        Settings.SpeedStat = value
+    end
+})
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.SpeedStat then
+                if currentStatPoint and tonumber(Settings.StatAmount) and currentStatPoint >= tonumber(Settings.StatAmount) then
+                    local args = {
+                        [1] = "ClickPoints",
+                        [2] = {
+                            ["Points"] = tonumber(Settings.StatAmount),
+                            ["Obj"] = "GSpeed"
+                        }
+                    }
+                    
+                    game:GetService("ReplicatedStorage").CurRemotes.DataChange_Points:FireServer(unpack(args))
+                end
+            end
+        end)
+    end
+end)
+
+
+StatSection:Toggle({
+    Title = 'Auto Crit Stat',
+    Default = false,
+    Callback = function(value)
+        Settings.CritStat = value
+    end
+})
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.CritStat then
+                if currentStatPoint and tonumber(Settings.StatAmount) and currentStatPoint >= tonumber(Settings.StatAmount) then
+                    local args = {
+                        [1] = "ClickPoints",
+                        [2] = {
+                            ["Points"] = tonumber(Settings.StatAmount),
+                            ["Obj"] = "GCriticalHit"
+                        }
+                    }
+                    
+                    game:GetService("ReplicatedStorage").CurRemotes.DataChange_Points:FireServer(unpack(args))
+                end
+            end
+        end)
+    end
+end)
+
+local Misc = MiscBased:Section({
+    Title = "Teleports";
+})
+
+Misc:Button({
+    Title = "Royal City",
+    Callback = function()
+        local args = {
+            [1] = "Royal City"
+        }
+        
+        game:GetService("ReplicatedStorage").Remotes.Chuansong:FireServer(unpack(args))
+        
+    end
+})
+
+Misc:Button({
+    Title = "Outpost",
+    Callback = function()
+        local args = {
+            [1] = "Outpost"
+        }
+        
+        game:GetService("ReplicatedStorage").Remotes.Chuansong:FireServer(unpack(args))
+        
+    end
+})
+
+Misc:Button({
+    Title = "Horde Camp",
+    Callback = function()
+        local args = {
+            [1] = "Horde Camp"
+        }
+        
+        game:GetService("ReplicatedStorage").Remotes.Chuansong:FireServer(unpack(args))
+        
+    end
+})
+
+Misc:Button({
+    Title = "Glacial Chasm",
+    Callback = function()
+        local args = {
+            [1] = "Glacial Chasm"
+        }
+        
+        game:GetService("ReplicatedStorage").Remotes.Chuansong:FireServer(unpack(args))
+    end
+})
+
+
+local CodesSection = MiscBased:Section({
+    Title = "Codes";
+})
+
+local Codes = {
+    "KHOQ15SCXZ",
+    "COUNTERATTACK",
+    "FORKINGDOMZ",
+    "ZHIYINNITAIMEI",
+    "ANGELHALO",
+    "BERSERKERXHEART",
+    "SWORD",
+    "SOPJCP2MP1VA",
+}
+
+local CodeSelect = CodesSection:Dropdown({
+    Title = "Select Code",
+    List = Codes,
+    Callback = function(v)
+        Settings.SelectedCode = v
+    end
+})
+
+CodesSection:Button({
+    Title = "Redeem Code",
+    Callback = function()
+        local args = {
+            [1] = Settings.SelectedCode
+        }
+        
+        game:GetService("ReplicatedStorage").Remotes.CDK:FireServer(unpack(args))
+    end
+})
+
+CodesSection:Button({
+    Title = "Redeem All Code",
+    Callback = function()
+        for _, code in ipairs(Codes) do
+            local args = {
+                [1] = code,
+            }
+            game:GetService("ReplicatedStorage").Remotes.CDK:FireServer(unpack(args))
+        end
+    end
+})
+
+local PlayerMods = MiscBased:Section({
+    Title = "Player Mod";
+})
+
+PlayerMods:Slider({
+    Title = "Speed",
+    Min = 16,
+    Max = 500,
+    Default = 16,
+    Callback = function(v)
+        Settings.WalkSpeed = v
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Settings.WalkSpeed
+    end
+})
+
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            if Settings.WalkSpeed ~= 16 then
+                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Settings.WalkSpeed
+            else
+                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+            end
+        end)
+    end
+end)
+
+Notification:Notify(
+    {Title = "Discord", Description = "Would you like to join our discord?"},
+    {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 15, Type = "option"},
+    {Image = "http://www.roblox.com/asset/?id=6023426923", ImageColor = Color3.fromRGB(255, 84, 84), Callback = function(State) 
+        print(tostring(State)) 
+        if State then 
+            setclipboard("discord.gg/4YSVKEem6U")
+            Notification:Notify(
+                {Title = "Discord", Description = "Link Set to Clipboard"},
+                {OutlineColor = Color3.fromRGB(80, 80, 80),Time = 15, Type = "default"}
+            )
+        end
+    end}
+)
+
+
+local function findExistingUi(ui)
+    for _, ui in pairs(game.CoreGui:GetDescendants()) do
+        if ui.Name == "KidachiUIToggleScripti" then 
+            ui:Destroy()
+        end
+    end
+    return false
+end
+findExistingUi(ui)
+
+
+
+local KidachiUIToggleScripti = Instance.new("ScreenGui")
+local KidachiToggleForScript = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+
+KidachiUIToggleScripti.Name = "KidachiUIToggleScripti"
+KidachiUIToggleScripti.Parent = game.CoreGui
+
+KidachiToggleForScript.Name = "KidachiToggleForScript"
+KidachiToggleForScript.Parent = KidachiUIToggleScripti
+KidachiToggleForScript.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+KidachiToggleForScript.BorderSizePixel = 0
+KidachiToggleForScript.Position = UDim2.new(0.0910987556, 0, 0.208211139, 0)
+KidachiToggleForScript.Size = UDim2.new(0, 65, 0, 65)
+KidachiToggleForScript.Image = "http://www.roblox.com/asset/?id=12332814310"
+
+UICorner.CornerRadius = UDim.new(0, 12)
+UICorner.Parent = KidachiToggleForScript
+
+local function XZLH_fake_script() -- KidachiToggleForScript.LocalScript 
+    local script = Instance.new('LocalScript', KidachiToggleForScript)
+
+    local KidachiScriptToggle = script.Parent
+    KidachiScriptToggle.Active = true
+    KidachiScriptToggle.Draggable = true
+
+    KidachiScriptToggle.MouseButton1Click:Connect(function()
+        if game:GetService("CoreGui").Base.motherFrame.Visible then
+            game:GetService("CoreGui").Base.motherFrame.Visible = false
+        elseif game:GetService("CoreGui").Base.motherFrame.Visible == false then
+            game:GetService("CoreGui").Base.motherFrame.Visible = true
+        end
+    end)
+end
+coroutine.wrap(XZLH_fake_script)()
+
+
+
+
+
+
+
