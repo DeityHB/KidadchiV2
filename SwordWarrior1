@@ -1,0 +1,18 @@
+local player = game.Players.LocalPlayer
+    
+local namecall;namecall = hookmetamethod(game, '__namecall', function(object, ...)
+    local args = {...}
+    
+    if getnamecallmethod() == "FireServer" then
+        if object.Name == 'MonsterEvent' and args[1] == "DamToPlayer_Num" then
+            if type(args[2]) == "table" then
+                args[2]["dam"] = -1000000000000000000
+                args[2]["Level_"] = -1000000000000000000
+            else
+                args[2] = 0
+            end
+        end
+    end
+    
+    return namecall(object, unpack(args));
+end);
