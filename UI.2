@@ -91,7 +91,7 @@ function Library.DestroyUI()
 end
 function Library.Render(settings)
     settings = settings or {}
-    local Title = settings.Title or "Kidachi V2 | discord.gg/4YSVKEem6U";
+    local Title = settings.Title or "Kidachi V2 | discord.gg/4YSVKEem6U | ".. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name .."!";
     local SavePosition = settings.SavePosition or false 
     local Options = settings.Options or {}
  
@@ -154,7 +154,7 @@ local Shadow_3 = Instance.new("ImageLabel")
         uiName.Size = UDim2.new(1, 0, 0, 15)
         uiName.Font = Enum.Font.GothamMedium
         uiName.RichText = true
-        uiName.Text = "<font color=\"rgb(129, 145, 255)\">Kidachi V2 | discord.gg/4YSVKEem6U</font>"
+        uiName.Text = "<font color=\"rgb(129, 145, 255)\">Kidachi V2 | discord.gg/4YSVKEem6U | ".. game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name .."!</font>"
         uiName.TextColor3 = Color3.fromRGB(235, 235, 235)
         uiName.TextSize = 13.000
 
@@ -1032,6 +1032,7 @@ local Shadow_3 = Instance.new("ImageLabel")
                 local Label = Instance.new("Frame")
                 local UICorner = Instance.new("UICorner")
                 local Title = Instance.new("TextLabel")
+                local UIPadding = Instance.new("UIPadding")
 
                
                 Label.Name = "Label"
@@ -1052,7 +1053,10 @@ local Shadow_3 = Instance.new("ImageLabel")
                 Title.Font = Enum.Font.Gotham
                 Title.Text = T
                 Title.TextColor3 = Color3.fromRGB(235, 235, 235)
-                Title.TextSize = 15.000
+                Title.TextSize = 13.000
+                Title.TextXAlignment = Enum.TextXAlignment.Left
+                UIPadding.Parent = Title
+                UIPadding.PaddingLeft = UDim.new(0, 7)
 
                 function LabelFunctions:SetText(settings)
                     settings = settings or {}
