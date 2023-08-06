@@ -2,7 +2,7 @@ local TweenService = game:GetService'TweenService'
 local CoreGui = game:GetService'CoreGui'
 local Library = {}
 local Mouse = game:GetService'Players'.LocalPlayer:GetMouse()
-print("UI: V1.1")
+print("UI: V1.2")
 
 
 
@@ -1029,6 +1029,7 @@ local Shadow_3 = Instance.new("ImageLabel")
                 settings = settings or {}
                 local T = settings.Title or "New Label"
                 local C = settings.Color or Color3.fromRGB(235, 235, 235)
+                local Trans = settings.Transparency or 0 
                 local LabelFunctions = {}
     
                 local Label = Instance.new("Frame")
@@ -1042,7 +1043,7 @@ local Shadow_3 = Instance.new("ImageLabel")
                 Label.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
                 Label.Position = UDim2.new(0.0131578948, 0, 0.735849082, 0)
                 Label.Size = UDim2.new(0, 555, 0, 39)
-                Label.Transparency = 1
+                Label.Transparency = Trans
 
                 UICorner.CornerRadius = UDim.new(0, 3)
                 UICorner.Parent = Label
@@ -1435,4 +1436,9 @@ local Shadow_3 = Instance.new("ImageLabel")
         return Tabs
 end
 return Library
+
+
+
+
+
 
